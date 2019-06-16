@@ -28,7 +28,7 @@ export default function (tickX, tickY, {
     const xticksText = [];
     let i = 0;
     function generateText(content) {
-        const text = new TextDisplayObject(null, content, {
+        const text = new TextDisplayObject(content, {
             lineWidth: ((width - left - right) / tickX - 10) * 2,
             textAlign: 'center',
             font: '24px sans-serif',
