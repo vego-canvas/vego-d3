@@ -9,6 +9,7 @@ export default function (tickX, tickY, {
     padding,
     bounds,
     scalerYInvert,
+    tickFormatFunc,
 }) {
     const {
         left, right, bottom, top,
@@ -20,7 +21,7 @@ export default function (tickX, tickY, {
         xSeries,
     } = series;
     const yticksDisplay = scalerY.ticks(tickY);
-    const tickFormat = scalerY.tickFormat(tickY, '.2s');
+    const tickFormat = scalerY.tickFormat(tickY, tickFormatFunc ? tickFormatFunc() : '.2d');
 
     const xticksspan = Math.ceil(xSeries.length / tickX);
 
@@ -31,7 +32,8 @@ export default function (tickX, tickY, {
         const text = new TextDisplayObject(content, {
             lineWidth: ((width - left - right) / tickX - 10) * 2,
             textAlign: 'center',
-            font: '24px sans-serif',
+            font: 'normal 24px sans-serif',
+            nocache: true,
         });
         text.$geometry.y = height - bottom + 10;
         text.$geometry.scaleX = text.$geometry.scaleY = 0.5;
@@ -42,8 +44,10 @@ export default function (tickX, tickY, {
         xticksText.push(generateText(xSeries[i]));
         i += xticksspan;
     }
-    xticksDisplay.push(xSeries[xSeries.length - 1]);
-    xticksText.push(generateText(xSeries[xSeries.length - 1]));
+    if (xticksDisplay.length < xSeries.length) {
+        xticksDisplay.push(xSeries[xSeries.length - 1]);
+        xticksText.push(generateText(xSeries[xSeries.length - 1]));
+    }
     const axis = new DisplayObject({ render(g) {
         const w = left;
         const h = height - bottom;
@@ -84,6 +88,7 @@ export default function (tickX, tickY, {
         yticksDisplay.forEach((d) => {
             g.fillText(tickFormat(d), w - 15, scalerY(d) - 5);
         });
+
         if (needTopLine) {
             g.fillText(tickFormat(scalerYInvert(top)), w - 15, top - 5);
         }

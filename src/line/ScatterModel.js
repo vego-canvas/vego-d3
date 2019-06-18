@@ -1,4 +1,3 @@
-import { line, curveMonotoneX } from 'd3-shape';
 import {
     DisplayObject,
 } from 'vegocore';
@@ -9,20 +8,21 @@ import {
 export default function ({
     series,
     scalerX, scalerY,
-    smooth,
 }) {
     const {
         xSeries, ySeries,
     } = series;
+    const PI2 = Math.PI * 2;
     return ySeries.map((data, s) => data && new DisplayObject({ render(g) {
         g.beginPath();
-        const l = line()
-            .x((d, i) => scalerX(xSeries[i]))
-            .y((d) => scalerY(d));
-        if (smooth)
-            l.curve(curveMonotoneX);
-        l.context(g)(data);
+        g.setFillStyle(colorsDark[s]);
 
-        g.setLineWidth(1.5).setStrokeStyle(colorsDark[s] || '#000').stroke();
+        xSeries.forEach((s, idx) => {
+            g.beginPath();
+            const y = scalerY(data[idx]);
+            const x = scalerX(s);
+            g.arc(x, y, 3, 0, PI2);
+            g.fill();
+        });
     } })).filter((i) => i);
 }

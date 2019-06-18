@@ -22,7 +22,10 @@ export default function (tickX, tickY, {
     const yticksDisplay = scalerY.ticks(tickY);
     const tickFormat = scalerY.tickFormat(tickY, '.2s');
 
-    const i = 0;
+    const xticksspan = Math.ceil(xSeries.length / tickX);
+    const xticksDisplay = [];
+    const xticksText = [];
+    let i = 0;
     function generateText(content) {
         const text = new TextDisplayObject(content, {
             lineWidth: ((width - left - right) / tickX - 10) * 2,
@@ -33,8 +36,16 @@ export default function (tickX, tickY, {
         text.$geometry.scaleX = text.$geometry.scaleY = 0.5;
         return text;
     }
-    const xticksText = xSeries.map(generateText);
-
+    // const xticksText = xSeries.map(generateText);
+    while (i < xSeries.length) {
+        xticksDisplay.push(xSeries[i]);
+        xticksText.push(generateText(xSeries[i]));
+        i += xticksspan;
+    }
+    if (xticksDisplay.length < xSeries.length) {
+        xticksDisplay.push(xSeries[xSeries.length - 1]);
+        xticksText.push(generateText(xSeries[xSeries.length - 1]));
+    }
     const axis = new DisplayObject({ render(g) {
         const w = left;
         const h = height - bottom;
@@ -74,7 +85,7 @@ export default function (tickX, tickY, {
 
         g.setTextAlign('center')
             .setTextBaseline('top');
-        xSeries.forEach((d, idx) => {
+        xticksDisplay.forEach((d, idx) => {
             const t = scalerX(d);
             xticksText[idx].$geometry.x = t + scalerX.bandwidth() / 2;
             xticksText[idx]._appendTransform();

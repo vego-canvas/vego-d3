@@ -23,6 +23,11 @@ class Chart {
         const {
             width, height,
         } = this.bounds;
+        if (this.canvas) {
+            this.canvas.canvas.remove();
+            this.canvas = null;
+        }
+        this.el.innerHTML = '';
         const canvasEle = document.createElement('canvas');
         canvasEle.width = width;
         canvasEle.height = height;
@@ -41,6 +46,18 @@ class Chart {
         const { canvas } = this;
         this._render(tickX, tickY, chosen);
         canvas.render();
+    }
+
+    reRender(obj) {
+        this.prepareCanvas();
+        this.render(obj);
+    }
+
+    resize(obj) {
+        this.bounds = extractElBounding(this.el);
+        this.prepareCanvas();
+        this._calcuScaler();
+        this.render(obj);
     }
 }
 

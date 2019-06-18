@@ -1,9 +1,9 @@
-import { LineChart, AreaChart } from './line/index';
+import { LineChart, AreaChart, ScatterChart } from './line/index';
 import StackChart from './stack/StackChart';
 import Chart from './Chart';
 
 export {
     Chart,
-    LineChart, AreaChart,
+    LineChart, AreaChart, ScatterChart,
     StackChart,
 };

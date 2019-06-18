@@ -24,6 +24,8 @@ export default function ({
             this.data = {
                 idx,
                 rawdata: ys[idx].data,
+                xl: x, xr: x + width, y,
+                sidx,
             };
             g.beginPath()
                 .setFillStyle(colorsAlpha[sidx])

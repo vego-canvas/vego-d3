@@ -40,3 +40,10 @@ export const colorsDark = [
 ];
 
 export const colorsDarkAlpha = colorsDark.map(transparency);
+
+// export * from './axis.js';
+// export * from './line.js';
+// export * from './arc.js';
+// export * from './pie.js';
+// export * from './stack.js';
+// export * from './rect.js';

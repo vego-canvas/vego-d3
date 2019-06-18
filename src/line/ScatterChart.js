@@ -1,9 +1,9 @@
 import LineChart from './LineChart';
-import AreaModel from './AreaModel';
+import ScatterModel from './ScatterModel';
 import AxisModel from './AxisModel';
 import IndicatorModel from './IndicatorModel';
 
-class AreaChart extends LineChart {
+class ScatterChart extends LineChart {
     _render(tickX, tickY, chosen) {
         const canvas = this.canvas;
 
@@ -17,7 +17,7 @@ class AreaChart extends LineChart {
         );
         canvas.addChild(axis);
         // eslint-disable-next-line
-        const model = AreaModel(this);
+        const model = ScatterModel(this);
 
         if (Array.isArray(model)) {
             model.forEach((m) => canvas.addChild(m));
@@ -26,4 +26,4 @@ class AreaChart extends LineChart {
         IndicatorModel(this);
     }
 }
-export default AreaChart;
+export default ScatterChart;

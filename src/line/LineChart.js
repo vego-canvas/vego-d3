@@ -9,7 +9,7 @@ import {
     checkSeries,
 } from './utils';
 
-import { max } from 'd3-array';
+import { max, min } from 'd3-array';
 
 import LineModel from './LineModel';
 import AxisModel from './AxisModel';
@@ -21,11 +21,21 @@ class LineChart extends Chart {
         super(el, options);
 
         const opt = checkOption(options);
+        this.rawSeries = checkSeries(opt, DataLayer);
         this.series = checkSeries(opt, DataLayer);
+        this.smooth = !!opt.smooth;
+        this.yaxis = opt.yAxis || {};
+        this.xaxis = opt.xAxis || {};
+        this.tickFormatFunc = opt.tickFormatFunc;
+        // eslint-disable-next-line
+        this.onIndicatorChange = opt.onIndicatorChange || (() => {});
         this._calcuScaler();
     }
 
     _calcuScaler() {
+        let {
+            minY, maxY,
+        } = this.yaxis;
         const {
             width, height,
         } = this.bounds;
@@ -40,9 +50,11 @@ class LineChart extends Chart {
             .range([left, width - right])
             .domain(xSeries);
 
+        minY = minY || min(ySeries, (d) => min(d));
+        maxY = maxY || max(ySeries, (d) => max(d));
         const scalerY = this.scalerY = scaleLinear()
             .range([height - bottom, top])
-            .domain([0, max(ySeries, (d) => max(d, (d) => Array.isArray(d) ? d[d.length - 1] : d))]) // ySeries的排布方式值和这个有关
+            .domain([minY, maxY]) // ySeries的排布方式值和这个有关
             .nice(8);
         this.scalerXInvert = scaleBandInvert(scalerX);
         this.scalerYInvert = scalerY.invert;
@@ -50,12 +62,14 @@ class LineChart extends Chart {
 
     _render(tickX, tickY, chosen) {
         const canvas = this.canvas;
-
         if (chosen) {
-            this.series.ySeries = this.series.ySeries.map((i, idx) => chosen.includes(idx) ? i : null);
+            this.series.ySeries = this.rawSeries.ySeries.map((i, idx) => chosen.includes(idx) ? i : null);
         }
         // eslint-disable-next-line
-        const axis = AxisModel(tickX, tickY, this);
+        const axis = AxisModel(
+            tickX || this.xaxis.count || 12,
+            tickY || this.yaxis.count || 8, this
+        );
         canvas.addChild(axis);
         // eslint-disable-next-line
         const model = LineModel(this);
