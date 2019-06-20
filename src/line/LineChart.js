@@ -77,6 +77,7 @@ class LineChart extends Chart {
         if (Array.isArray(model)) {
             model.forEach((m) => canvas.addChild(m));
         }
+
         // eslint-disable-next-line
         IndicatorModel(this);
     }

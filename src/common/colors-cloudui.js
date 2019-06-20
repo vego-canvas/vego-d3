@@ -38,8 +38,14 @@ export const colorsDark = [
     'rgb(135,206,232)',
     'rgb(97,218,198)',
 ];
-
 export const colorsDarkAlpha = colorsDark.map(transparency);
+
+export const colorsDarkGenerator = function () {
+    return colorsDark.map((c, idx) => () => ({
+        stroke: c,
+        fill: colorsDarkAlpha[idx],
+    }));
+};
 
 // export * from './axis.js';
 // export * from './line.js';

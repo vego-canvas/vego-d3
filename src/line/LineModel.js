@@ -2,14 +2,11 @@ import { line, curveMonotoneX } from 'd3-shape';
 import {
     DisplayObject,
 } from 'vegocore';
-import {
-    colorsDark, colorsDarkAlpha,
-} from '../common/colors-cloudui';
 
 export default function ({
     series,
     scalerX, scalerY,
-    smooth,
+    smooth, colors,
 }) {
     const {
         xSeries, ySeries,
@@ -23,6 +20,6 @@ export default function ({
             l.curve(curveMonotoneX);
         l.context(g)(data);
 
-        g.setLineWidth(1.5).setStrokeStyle(colorsDark[s] || '#000').stroke();
+        g.setLineWidth(1.5).setStrokeStyle(colors[s].stroke || '#000').stroke();
     } })).filter((i) => i);
 }

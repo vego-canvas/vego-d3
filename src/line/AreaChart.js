@@ -8,7 +8,7 @@ class AreaChart extends LineChart {
         const canvas = this.canvas;
 
         if (chosen) {
-            this.series.ySeries = this.series.ySeries.map((i, idx) => chosen.includes(idx) ? i : null);
+            this.series.ySeries = this.rawSeries.ySeries.map((i, idx) => chosen.includes(idx) ? i : null);
         }
         // eslint-disable-next-line
         const axis = AxisModel(

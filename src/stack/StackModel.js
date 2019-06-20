@@ -1,18 +1,18 @@
 import {
     DisplayObject,
 } from 'vegocore';
-import {
-    colors, colorsAlpha,
-} from '../common/colors-cloudui';
+// import {
+//     colors, colorsAlpha,
+// } from '../common/colors-cloudui';
 
 export default function ({
     series,
     scalerX, scalerY,
+    colors,
 }) {
     const {
         xSeries, ySeries,
     } = series;
-
     return ySeries.reduce((accu, ys, sidx) => accu.concat(xSeries.map((s, idx) => new DisplayObject({
         render(g) {
             const [y0, y1] = ys[idx];
@@ -28,8 +28,8 @@ export default function ({
                 sidx,
             };
             g.beginPath()
-                .setFillStyle(colorsAlpha[sidx])
-                .setStrokeStyle(colorsAlpha[sidx])
+                .setFillStyle(colors[sidx].fill)
+                .setStrokeStyle(colors[sidx].stroke)
                 .fillRect(x, y, width, height)
                 .strokeRect(x, y, width, height);
         },

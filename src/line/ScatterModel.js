@@ -1,13 +1,11 @@
 import {
     DisplayObject,
 } from 'vegocore';
-import {
-    colorsDark, colorsDarkAlpha,
-} from '../common/colors-cloudui';
 
 export default function ({
     series,
     scalerX, scalerY,
+    colors,
 }) {
     const {
         xSeries, ySeries,
@@ -15,7 +13,7 @@ export default function ({
     const PI2 = Math.PI * 2;
     return ySeries.map((data, s) => data && new DisplayObject({ render(g) {
         g.beginPath();
-        g.setFillStyle(colorsDark[s]);
+        g.setFillStyle(colors[s].fill);
 
         xSeries.forEach((s, idx) => {
             g.beginPath();

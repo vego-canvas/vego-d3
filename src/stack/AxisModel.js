@@ -2,13 +2,15 @@ import {
     DisplayObject,
     TextDisplayObject,
 } from 'vegocore';
-
+import { xAxisSpaceBetween } from '../common/x-axis-space-between';
 export default function (tickX, tickY, {
     series,
     scalerX, scalerY,
     padding,
     bounds,
     scalerYInvert,
+    tickFormatFunc,
+    styles,
 }) {
     const {
         left, right, bottom, top,
@@ -20,32 +22,33 @@ export default function (tickX, tickY, {
         xSeries,
     } = series;
     const yticksDisplay = scalerY.ticks(tickY);
-    const tickFormat = scalerY.tickFormat(tickY, '.2s');
+    const tickFormat = scalerY.tickFormat(tickY, tickFormatFunc ? tickFormatFunc() : '.2d');
 
-    const xticksspan = Math.ceil(xSeries.length / tickX);
-    const xticksDisplay = [];
-    const xticksText = [];
-    let i = 0;
     function generateText(content) {
         const text = new TextDisplayObject(content, {
-            lineWidth: ((width - left - right) / tickX - 10) * 2,
+            lineWidth: Math.ceil((width - left - right) / tickX),
             textAlign: 'center',
-            font: '24px sans-serif',
+            textVerticalAlign: 'middle',
+            font: styles.xAxisFont,
+            color: styles.xfontColor,
         });
-        text.$geometry.y = height - bottom + 10;
-        text.$geometry.scaleX = text.$geometry.scaleY = 0.5;
+        text.$geometry.y = height - bottom + styles.xFontMarginTop;
         return text;
     }
-    // const xticksText = xSeries.map(generateText);
-    while (i < xSeries.length) {
-        xticksDisplay.push(xSeries[i]);
-        xticksText.push(generateText(xSeries[i]));
-        i += xticksspan;
-    }
-    if (xticksDisplay.length < xSeries.length) {
-        xticksDisplay.push(xSeries[xSeries.length - 1]);
-        xticksText.push(generateText(xSeries[xSeries.length - 1]));
-    }
+    const {
+        xticksDisplay,
+        xticksText,
+    } = xAxisSpaceBetween(xSeries, tickX, generateText);
+    xticksDisplay.forEach((d, idx) => {
+        const t = scalerX(d);
+        xticksText[idx].$geometry.x = t + scalerX.bandwidth() / 2;
+        xticksText[idx]._appendTransform();
+    });
+    const {
+        xAxisEdgeColor,
+        yAxisEdgeColor,
+        gridColor,
+    } = styles;
     const axis = new DisplayObject({ render(g) {
         const w = left;
         const h = height - bottom;
@@ -55,11 +58,8 @@ export default function (tickX, tickY, {
 
         xSeries.forEach((d) => {
             const leftBorder = scalerX(d);
-            // const rightBorder = scalerX(d) + scalerX.bandwidth();
             g.moveTo(leftBorder, top);
             g.lineTo(leftBorder, h);
-            // g.moveTo(rightBorder, h);
-            // g.lineTo(rightBorder, h + 6);
         });
         g.moveTo(tmax, top);
         g.lineTo(tmax, h);
@@ -81,19 +81,27 @@ export default function (tickX, tickY, {
                 .lineTo(tmax, top);
         }
 
-        g.setStrokeStyle('#eee').stroke();
+        g.setStrokeStyle(gridColor).stroke();
+        if (xAxisEdgeColor)
+            g.beginPath()
+                .moveTo(t, h)
+                .lineTo(tmax, h)
+                .setStrokeStyle(xAxisEdgeColor).stroke();
+
+        if (yAxisEdgeColor)
+            g.beginPath()
+                .moveTo(t, top)
+                .lineTo(t, h)
+                .setStrokeStyle(yAxisEdgeColor).stroke();
 
         g.setTextAlign('center')
-            .setTextBaseline('top');
-        xticksDisplay.forEach((d, idx) => {
-            const t = scalerX(d);
-            xticksText[idx].$geometry.x = t + scalerX.bandwidth() / 2;
-            xticksText[idx]._appendTransform();
-            // g.fillText(d, t, h + 6);
-        });
+            .setTextBaseline('top')
+            .setFont(styles.yAxisFont)
+            .setFillStyle(styles.yfontColor);
         yticksDisplay.forEach((d) => {
-            g.fillText(tickFormat(d), w - 15, scalerY(d) - 5);
+            g.fillText(tickFormat(d), w - styles.yFontMarginRight, scalerY(d) - 5);
         });
+
         if (needTopLine) {
             g.fillText(tickFormat(scalerYInvert(top)), w - 15, top - 5);
         }

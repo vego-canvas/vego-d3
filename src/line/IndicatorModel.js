@@ -1,14 +1,11 @@
 import {
     DisplayObject,
 } from 'vegocore';
-import {
-    colorsDark, colorsDarkAlpha,
-} from '../common/colors-cloudui';
 
 export default function ({
     scalerX, scalerY, padding, bounds, canvas,
     scalerYInvert, scalerXInvert, series,
-    onIndicatorChange,
+    onIndicatorChange, colors,
 }) {
     const {
         width, height,
@@ -76,7 +73,7 @@ export default function ({
         Indicator.$visible = true;
         Indicator.targetPoints = targetPoints.map((t, idx) => ({
             pt: scalerY(t),
-            fill: colorsDark[idx],
+            fill: colors[idx].stroke,
         }));
         const pos = i * eachBand + t;
         Indicator.$geometry.x = pos;
@@ -97,6 +94,7 @@ export default function ({
                     },
                 },
             });
+            lastPosition = pos;
         }
 
         canvas.render();
